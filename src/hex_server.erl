@@ -1027,22 +1027,27 @@ run_event(Signal, Data, Rules, State)
 	_ -> State
     end.
 
-run_event_(Signal, Data, [Rule|Rules], State) ->
-    case match_pattern(Signal, Data, Rule#hex_input.signal) of
+run_event_(Signal=#hex_signal {source = Src}, Data, 
+	   [#hex_input {label = Label, signal = Pattern, flags = Flags} |
+	    Rules],
+	    State) ->
+    case match_pattern(Signal, Data, Pattern) of
 	{true, Type, Value} ->
-	    lager:debug("signal match ~p ~p", [Type, Value]),
-	    case active(Rule#hex_input.flags) of
+	    lager:debug("matching label ~p and rule ~s",
+			[Label,format_pattern(Pattern)]),
+	    case active(Flags) of
 		true ->
-		    lager:debug("active"),
-		    Src = Signal#hex_signal.source,
+		    lager:debug("has active flag"),
 		    V = {Type, Value, Src},
-		    input(Rule#hex_input.label, V),
+		    input(Label, V),
 		    run_event_(Signal, Data, Rules, State);
 		false ->
 		    run_event_(Signal, Data, Rules, State)
 	    end;
 	false ->
-	    %%lager:debug("no match signal ~p rule ~p", [Signal, Rule]),
+%%	    lager:debug("no match signal ~s ~n rule ~s",
+%%			[format_signal(Signal),
+%%			 format_pattern(Pattern)]),
 	    run_event_(Signal, Data, Rules, State)
     end;
 run_event_(_Signal, _Data, [], _State) ->
@@ -1532,10 +1537,10 @@ match_pattern(Sig, _Data, Pat) when is_record(Sig, hex_signal),
 	match_value(Pat#hex_pattern.chan,Sig#hex_signal.chan) andalso
 	match_value(Pat#hex_pattern.type, Sig#hex_signal.type) of
 	true ->
-	     lager:debug("signal match ~s ", [format_signal(Sig)]),
+	     lager:debug("match for signal ~s ", [format_signal(Sig)]),
 	     case match_value(Pat#hex_pattern.value,Sig#hex_signal.value) of
 		 true ->
-		    lager:debug("value match ~p ", [Sig#hex_signal.value]),
+		    lager:debug("match for value ~p ", [Sig#hex_signal.value]),
 		    case Sig#hex_signal.type of
 			?HEX_DIGITAL ->
 			    {true, digital, Sig#hex_signal.value};
@@ -1667,6 +1672,11 @@ format_signal(#hex_signal{id = I, chan = C, type = T, source = S}) ->
     io_lib_format:fwrite(
       "{Node ~.16.0#, Channel ~p, Index ~.16.0#, source ~p}",
       [I,C,T,S]).
+
+format_pattern(#hex_pattern{id = I, chan = C, type = T, value = V}) ->
+    io_lib_format:fwrite(
+      "{Id ~.16.0#, Channel ~p, Type ~.16.0#, Value ~p}",
+      [I,C,T,V]).
 
 dump_state(State) ->
     io:format("State\n:", []),
