@@ -107,7 +107,7 @@
 	  core = undefined :: term(),         %% core structure
 	  targets = undefined :: ?DICT_T,     %% declared variables
 
-	  env     = [],                       %% enironment for last event
+	  env     = [],                       %% environment for last event
 	  actions = []                        %% [{Cond,Value,{App,Flags}}]
 	 }).
 
