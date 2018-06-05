@@ -922,7 +922,7 @@ init_plugin(App, Dir, Flags) ->
     lager:debug("init_event: ~p ~p", [App,Flags]),
     case App:init_event(Dir, Flags) of
 	ok ->
-	    lager:info("~w:~w flags ~p initiated", [App,Dir,Flags]),
+	    lager:debug("~w:~w flags ~p initiated", [App,Dir,Flags]),
 	    ok;
 	Error ->
 	    lager:warning("~w:~w flags ~p failed ~p", [App,Dir,Flags,Error]),
