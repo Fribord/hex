@@ -90,7 +90,7 @@
 	  %% rfid config
 	  rfid_match = 0 :: uint32(),
 	  rfid_mask  = 0 :: uint32(),
-	  rfid_match_to_digital :: boolean(),
+	  rfid_match_to_digital :: boolean() | undefined,
 	  outputs = [] :: [{atom(),uint8()}]
 	}).
 
