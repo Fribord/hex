@@ -1668,10 +1668,10 @@ event_value(Var, Env) when is_atom(Var) ->
 event_value(Value, _Env) ->
     Value.
 
-format_signal(#hex_signal{id = I, chan = C, type = T, source = S}) ->
+format_signal(#hex_signal{id = I, chan = C, type = T, source = S, value = V}) ->
     io_lib_format:fwrite(
-      "{Node ~.16.0#, Channel ~p, Index ~.16.0#, source ~p}",
-      [I,C,T,S]).
+      "{Node ~.16.0#, Channel ~p, Index ~.16.0#, Source ~p, Value ~p}",
+      [I,C,T,S,V]).
 
 format_pattern(#hex_pattern{id = I, chan = C, type = T, value = V}) ->
     io_lib_format:fwrite(
